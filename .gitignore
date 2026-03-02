@@ -1,0 +1,16 @@
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data files (you might choose to keep them in repo)
+project/data/*
+
+# Virtual environment
+venv/
+
+# OS files
+Thumbs.db
+.DS_Store
