@@ -83,4 +83,4 @@ Documentation is always the first step toward a "proper" project – the code no
 
 Added collaboration feature
 
-Co-authored-by: DivyeshWagh waghdivyesh4@gmail.com
+Co-authored-by: DivyeshWagh <waghdivyesh4@gmail.com>
