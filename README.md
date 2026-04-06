@@ -81,6 +81,4 @@ Documentation is always the first step toward a "proper" project – the code no
 ## My First Pull Request 🚀
 
 
-Added collaboration feature
 
-Co-authored-by: DivyeshWagh <waghdivyesh4@gmail.com>
