@@ -77,3 +77,5 @@ Dynamic Result Analyzer/
 Documentation is always the first step toward a "proper" project – the code now has clearer structure, and the README explains how to bootstrap and run the application.
 
 🎯 Feel free to ask for help reorganizing further or adding features!
+
+## My First Pull Request 🚀
