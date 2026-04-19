@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0078d7;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+            color: #ffffff;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h2 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(90deg, #fff, rgba(255,255,255,0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 4px 20px rgba(0,0,0,0.3);
+        }
+        .error-msg {
+            color: #ff6b6b;
+            font-size: 24px;
+            background: rgba(255,0,0,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        .content-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+        }
+        .chart-img {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+        }
+        .chart-img:hover {
+            transform: scale(1.02);
+        }
+        .table-container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            margin-bottom: 50px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 16px 20px;
+            text-align: center;
+        }
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: #a0a0b5;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+        tr {
+            transition: background 0.3s ease;
+        }
+        tr:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        td {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 15px;
+            font-weight: 400;
+        }
+        .btn-back {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), #005bb5);
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <h2>{{ title }}</h2>
+
+    <div class="content-container">
+        {% if chart_path %}
+            <img src="{{ url_for('static', filename=chart_path) }}" alt="SGPA Chart" class="chart-img">
+        {% else %}
+            <p class="error-msg">Error: Could not generate chart.</p>
+        {% endif %}
+
+        {% if percentages %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Percentage (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category, percent in percentages.items() %}
+                        <tr>
+                            <td>{{ category }}</td>
+                            <td>{{ percent }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p class="error-msg">No data available to display.</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <a href="/options" class="btn-back">⬅ Back to Options</a>
+    </div>
+
+</body>
+</html>
