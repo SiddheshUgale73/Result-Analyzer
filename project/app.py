@@ -17,19 +17,9 @@ from processor import (
     generate_second_year_csv,
     generate_all_first_year_csv,
     get_top5_students,
-    get_top5_students_second_year,
-    get_top5_students_sem1_second_year,
-    get_top5_students_sem2_second_year,
-    get_top5_students_sem3_second_year,
-    get_top5_students_sem4_second_year,
-    get_top5_students_sgpa_wise_sem1,
-    get_top5_students_sgpa_wise_sem2,
     get_subject_toppers,
-    get_subject_toppers_2,
     get_subject_summary,
-    get_subject_summary_2,
-    get_sgpa_chart,
-    get_sgpa_chart_sem2,
+    generate_sgpa_chart,
     DEFAULT_FILES,
 )
 
@@ -114,7 +104,8 @@ def process_option():
     # TOP 5 CGPA Options
     if selected_option in ["top5", "top5_2"]:
         title = "Top 5 Students As Per CGPA"
-        data_list = get_top5_students() if selected_option == "top5" else get_top5_students_second_year()
+        csv_file = DEFAULT_FILES["first_year_csv"] if selected_option == "top5" else DEFAULT_FILES["second_year_csv"]
+        data_list = get_top5_students(csv_file, sort_key="CGPA")
         tables = [{
             "headers": ["Rank", "Name", "PRN", "CGPA"],
             "rows": parse_top5(data_list)
@@ -123,35 +114,37 @@ def process_option():
 
     # TOP 5 SGPA Combined Options
     elif selected_option == "top5_sgpa_1_2":
+        csv_file = DEFAULT_FILES["second_year_csv"]
         tables = [
             {
                 "subtitle": "📘 Semester 1 - Top 5 Students",
                 "color": "#0078d7",
                 "headers": ["Rank", "Name", "PRN", "SGPA"],
-                "rows": parse_top5(get_top5_students_sem1_second_year())
+                "rows": parse_top5(get_top5_students(csv_file, sort_key="SGPA 1"))
             },
             {
                 "subtitle": "📗 Semester 2 - Top 5 Students",
                 "color": "#28a745",
                 "headers": ["Rank", "Name", "PRN", "SGPA"],
-                "rows": parse_top5(get_top5_students_sem2_second_year())
+                "rows": parse_top5(get_top5_students(csv_file, sort_key="SGPA 2"))
             }
         ]
         return render_template('result_table.html', title="🏆 Top 5 Students of Second Year 🏆", tables=tables)
 
     elif selected_option == "top5_sgpa_3_4":
+        csv_file = DEFAULT_FILES["second_year_csv"]
         tables = [
             {
                 "subtitle": "📘 Semester 3 - Top 5 Students",
                 "color": "#0078d7",
                 "headers": ["Rank", "Name", "PRN", "SGPA"],
-                "rows": parse_top5(get_top5_students_sem3_second_year())
+                "rows": parse_top5(get_top5_students(csv_file, sort_key="SGPA 3"))
             },
             {
                 "subtitle": "📗 Semester 4 - Top 5 Students",
                 "color": "#28a745",
                 "headers": ["Rank", "Name", "PRN", "SGPA"],
-                "rows": parse_top5(get_top5_students_sem4_second_year())
+                "rows": parse_top5(get_top5_students(csv_file, sort_key="SGPA 4"))
             }
         ]
         return render_template('result_table.html', title="🏆 Top 5 Students of Second Year (Semester 3 & 4) 🏆", tables=tables)
@@ -159,7 +152,9 @@ def process_option():
     # TOP 5 SGPA Individual Options
     elif selected_option in ["top5_sgpa1", "top5_sgpa2"]:
         sem = "SEM 1" if selected_option == "top5_sgpa1" else "SEM 2"
-        data_list = get_top5_students_sgpa_wise_sem1() if selected_option == "top5_sgpa1" else get_top5_students_sgpa_wise_sem2()
+        sort_key = "SGPA 1" if selected_option == "top5_sgpa1" else "SGPA 2"
+        csv_file = DEFAULT_FILES["first_year_csv"]
+        data_list = get_top5_students(csv_file, sort_key=sort_key)
         tables = [{
             "headers": ["Rank", "Name", "PRN", "SGPA"],
             "rows": parse_top5(data_list)
@@ -168,7 +163,8 @@ def process_option():
 
     # SUBJECT TOPPERS
     elif selected_option in ["subject_topper", "subject_topper_2"]:
-        data_list = get_subject_toppers() if selected_option == "subject_topper" else get_subject_toppers_2()
+        csv_file = DEFAULT_FILES["first_year_csv"] if selected_option == "subject_topper" else DEFAULT_FILES["second_year_csv"]
+        data_list = get_subject_toppers(csv_file)
         tables = [{
             "headers": ["Subject Code", "Name", "PRN", "Marks"],
             "rows": parse_subject_toppers(data_list)
@@ -177,33 +173,28 @@ def process_option():
 
     # SUBJECT SUMMARIES
     elif selected_option in ["subject_summary", "subject_summary_2"]:
-        summary = get_subject_summary() if selected_option == "subject_summary" else get_subject_summary_2()
+        csv_file = DEFAULT_FILES["first_year_all_csv"] if selected_option == "subject_summary" else DEFAULT_FILES["second_year_csv"]
+        summary = get_subject_summary(csv_file)
         if "Error" in summary:
             return render_template('result_summary.html', title="📘 Subject-wise Pass/Fail Summary", error=summary["Error"])
         return render_template('result_summary.html', title="📘 Subject-wise Pass/Fail Summary", summary=summary)
 
     # SGPA CHARTS
     elif selected_option.startswith("sgpa_chart"):
-        if selected_option == "sgpa_chart":
-            chart_path, percentages = get_sgpa_chart()
-            title = "📊 SGPA (Sem 1) Result Distribution"
-        elif selected_option == "sgpa_chart_sem2":
-            chart_path, percentages = get_sgpa_chart_sem2()
-            title = "📊 SGPA (Sem 2) Result Distribution"
-        elif selected_option == "sgpa_chart_sem1_y2":
-            chart_path, percentages = get_sgpa_chart_sem1_y2()
-            title = "📊 SGPA (Sem 1) Result Distribution"
-        elif selected_option == "sgpa_chart_sem2_y2":
-            chart_path, percentages = get_sgpa_chart_sem2_y2()
-            title = "📊 SGPA (Sem 2) Result Distribution"
-        elif selected_option == "sgpa_chart_sem3_y2":
-            chart_path, percentages = get_sgpa_chart_sem3_y2()
-            title = "📊 SGPA (Sem 3) Result Distribution"
-        elif selected_option == "sgpa_chart_sem4_y2":
-            chart_path, percentages = get_sgpa_chart_sem4_y2()
-            title = "📊 SGPA (Sem 4) Result Distribution"
-        else:
+        chart_args = {
+            "sgpa_chart": (DEFAULT_FILES["first_year_all_csv"], "SGPA 1", "📊 SGPA (Sem 1) Result Distribution", "sgpa_chart.png"),
+            "sgpa_chart_sem2": (DEFAULT_FILES["first_year_all_csv"], "SGPA 2", "📊 SGPA (Sem 2) Result Distribution", "sgpa_chart2.png"),
+            "sgpa_chart_sem1_y2": (DEFAULT_FILES["second_year_csv"], "SGPA 1", "📊 SGPA (Sem 1) Result Distribution", "sgpa_chart_sem1_y2.png"),
+            "sgpa_chart_sem2_y2": (DEFAULT_FILES["second_year_csv"], "SGPA 2", "📊 SGPA (Sem 2) Result Distribution", "sgpa_chart_sem2_y2.png"),
+            "sgpa_chart_sem3_y2": (DEFAULT_FILES["second_year_csv"], "SGPA 3", "📊 SGPA (Sem 3) Result Distribution", "sgpa_chart_sem3_y2.png"),
+            "sgpa_chart_sem4_y2": (DEFAULT_FILES["second_year_csv"], "SGPA 4", "📊 SGPA (Sem 4) Result Distribution", "sgpa_chart_sem4_y2.png")
+        }
+        
+        if selected_option not in chart_args:
             return "❌ Invalid chart option!", 400
+            
+        csv_file, sgpa_col, title, output_filename = chart_args[selected_option]
+        chart_path, percentages = generate_sgpa_chart(csv_file, sgpa_col, title, output_filename)
         
         return render_template('result_chart.html', title=title, chart_path=chart_path, percentages=percentages)
 
